@@ -1,0 +1,20 @@
+{
+  "name": "Drops Навигатор",
+  "short_name": "Drops",
+  "description": "Голосовая навигация в наушники без открытия карт",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

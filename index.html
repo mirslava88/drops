@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b1020" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" />
+    <link rel="apple-touch-icon" href="./icons/icon.svg" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <title>Drops Навигатор</title>
+  </head>
+  <body>
+    <main>
+      <h1>🎧 Drops Навигатор</h1>
+      <p class="sub">Голосовые подсказки в наушники — без открытия карт.</p>
+
+      <div class="row">
+        <input id="dest" type="text" placeholder="Куда едем? Адрес или место" autocomplete="off" />
+        <button id="mic" class="icon-btn" title="Сказать адрес голосом">🎙️</button>
+      </div>
+
+      <div class="row buttons">
+        <button id="go" class="primary">Старт</button>
+        <button id="stop" class="danger hidden">Стоп</button>
+        <button id="testVoice" class="ghost">Проверить звук</button>
+      </div>
+
+      <div id="status" class="status">Введите адрес и нажмите «Старт».</div>
+
+      <section id="card" class="card hidden">
+        <div id="instruction" class="instruction">—</div>
+        <div class="metrics">
+          <div><span class="label">До манёвра</span><b id="distToManeuver">—</b></div>
+          <div><span class="label">Осталось</span><b id="remaining">—</b></div>
+          <div><span class="label">Время</span><b id="eta">—</b></div>
+          <div><span class="label">Точность GPS</span><b id="accuracy">—</b></div>
+        </div>
+      </section>
+
+      <details class="settings">
+        <summary>Настройки</summary>
+        <label>
+          Тип маршрута
+          <select id="profile">
+            <option value="driving">🚗 Авто</option>
+            <option value="bike">🚲 Велосипед</option>
+            <option value="foot">🚶 Пешком</option>
+          </select>
+        </label>
+        <label class="checkbox"><input id="voiceOn" type="checkbox" checked /> Голос включён</label>
+        <label>
+          Скорость речи
+          <input id="rate" type="range" min="0.7" max="1.4" step="0.1" value="1" />
+        </label>
+        <label>
+          Ключ Яндекс.Геокодера <span class="hint">(необязательно)</span>
+          <input id="yandexKey" type="text" placeholder="оставьте пустым для OpenStreetMap" autocomplete="off" />
+        </label>
+        <p class="note">
+          Пеший/вело маршрут на публичном демо-сервере OSRM может строиться как авто.
+          Для точного пешего режима укажите свой сервер OSRM в настройках кода.
+        </p>
+      </details>
+    </main>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

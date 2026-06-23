@@ -1,0 +1,177 @@
+:root {
+  --bg: #0b1020;
+  --card: #151b30;
+  --fg: #eef2ff;
+  --muted: #9aa6c8;
+  --accent: #5b8cff;
+  --ok: #43c479;
+  --warn: #e8b54a;
+  --err: #f0596a;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+}
+main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+}
+h1 {
+  font-size: 26px;
+  margin: 8px 0 2px;
+}
+.sub {
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.row.buttons {
+  flex-wrap: wrap;
+}
+input[type="text"] {
+  flex: 1;
+  padding: 14px 14px;
+  font-size: 17px;
+  border-radius: 12px;
+  border: 1px solid #2a3354;
+  background: #0f1530;
+  color: var(--fg);
+}
+input::placeholder {
+  color: #5f6a8c;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+}
+button:disabled {
+  opacity: 0.5;
+}
+.primary {
+  background: var(--accent);
+  flex: 1;
+}
+.danger {
+  background: var(--err);
+  flex: 1;
+}
+.ghost {
+  background: #232b48;
+}
+.icon-btn {
+  background: #232b48;
+  font-size: 20px;
+  padding: 12px 14px;
+}
+
+.status {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #11182f;
+  color: var(--muted);
+  min-height: 20px;
+  font-size: 15px;
+}
+.status.ok {
+  color: var(--ok);
+}
+.status.warn {
+  color: var(--warn);
+}
+.status.err {
+  color: var(--err);
+}
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  border: 2px solid transparent;
+}
+.card.offroute {
+  border-color: var(--warn);
+}
+.instruction {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 16px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.metrics .label {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+.metrics b {
+  font-size: 20px;
+}
+
+.settings {
+  margin-top: 20px;
+  background: #11182f;
+  border-radius: 12px;
+  padding: 8px 14px;
+}
+.settings summary {
+  cursor: pointer;
+  padding: 8px 0;
+  color: var(--muted);
+}
+.settings label {
+  display: block;
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.settings select,
+.settings input[type="text"],
+.settings input[type="range"] {
+  width: 100%;
+  margin-top: 6px;
+}
+.settings .checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.settings .checkbox input {
+  width: auto;
+  margin: 0;
+}
+.hint {
+  color: #5f6a8c;
+}
+.note {
+  color: #5f6a8c;
+  font-size: 13px;
+}
+
+.hidden {
+  display: none !important;
+}

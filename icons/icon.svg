@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0b1020"/>
+  <!-- наушники -->
+  <path d="M146 286v74a26 26 0 0 0 26 26h14a16 16 0 0 0 16-16v-94a16 16 0 0 0-16-16h-14a26 26 0 0 0-26 26z" fill="#5b8cff"/>
+  <path d="M366 286v74a26 26 0 0 1-26 26h-14a16 16 0 0 1-16-16v-94a16 16 0 0 1 16-16h14a26 26 0 0 1 26 26z" fill="#5b8cff"/>
+  <path d="M146 296v-30a110 110 0 0 1 220 0v30" fill="none" stroke="#5b8cff" stroke-width="26" stroke-linecap="round"/>
+  <!-- стрелка-маршрут -->
+  <path d="M256 196l40 70h-26v60h-28v-60h-26z" fill="#43c479"/>
+</svg>
