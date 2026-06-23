@@ -4,7 +4,7 @@
 // При наличии ключа Яндекса используется Яндекс.Геокодер.
 
 import { instructionText } from './instructions.js';
-import { cumulative, haversine, nearestIndex } from './geo.js';
+import { cumulative, haversine } from './geo.js';
 
 // Адрес/запрос → { lat, lng, label }.
 export async function geocode(query, opts = {}) {
@@ -18,6 +18,7 @@ export async function geocode(query, opts = {}) {
     const m = j.response?.GeoObjectCollection?.featureMember?.[0];
     if (!m) throw new Error('Адрес не найден');
     const [lng, lat] = m.GeoObject.Point.pos.split(' ').map(Number);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) throw new Error('Адрес не найден');
     return { lat, lng, label: m.GeoObject.metaDataProperty.GeocoderMetaData.text };
   }
 
@@ -28,7 +29,10 @@ export async function geocode(query, opts = {}) {
   if (!r.ok) throw new Error('Геокодер вернул ошибку ' + r.status);
   const j = await r.json();
   if (!Array.isArray(j) || !j.length) throw new Error('Адрес не найден');
-  return { lat: parseFloat(j[0].lat), lng: parseFloat(j[0].lon), label: j[0].display_name };
+  const lat = parseFloat(j[0].lat);
+  const lng = parseFloat(j[0].lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) throw new Error('Адрес не найден');
+  return { lat, lng, label: j[0].display_name };
 }
 
 // from/to — { lat, lng }. Возвращает нормализованный маршрут (см. normalizeOSRM).
@@ -58,11 +62,25 @@ function normalizeOSRM(rt) {
   const cum = cumulative(coords);
   const steps = [];
 
+  // Привязываем каждый манёвр к вершине геометрии, двигаясь только вперёд:
+  // так на маршрутах, проходящих рядом сами с собой (петли, развороты,
+  // параллельные проезды), манёвр не «приклеится» к другому проходу маршрута.
+  let from = 0;
   for (const leg of rt.legs) {
     for (const s of leg.steps) {
       const loc = s.maneuver.location; // [lng, lat]
       const location = [loc[1], loc[0]];
-      const idx = nearestIndex(coords, location);
+      let idx = from;
+      let bd = Infinity;
+      for (let i = from; i < coords.length; i++) {
+        const d = haversine(coords[i], location);
+        if (d < bd) {
+          bd = d;
+          idx = i;
+        }
+        if (bd < 1) break; // точное совпадение вершины (overview=full)
+      }
+      from = idx;
       steps.push({
         along: cum[idx],
         location,
@@ -73,10 +91,6 @@ function normalizeOSRM(rt) {
         instruction: instructionText(s),
       });
     }
-  }
-  // На случай несортированной геометрии — гарантируем неубывание along.
-  for (let i = 1; i < steps.length; i++) {
-    if (steps[i].along < steps[i - 1].along) steps[i].along = steps[i - 1].along;
   }
 
   return { coords, cum, steps, distance: rt.distance, duration: rt.duration };
@@ -93,6 +107,26 @@ export function announceDistance(m) {
   if (m >= 1000) return Math.round(m / 100) * 100;
   if (m >= 100) return Math.round(m / 50) * 50;
   return Math.round(m / 10) * 10;
+}
+
+// Расстояние словами для синтеза речи: «двести метров», «один километр».
+// Принимает округлённое announceDistance() (метры кратны 10, км кратны 100),
+// поэтому единица всегда согласуется как «метров»; для км — правильное склонение.
+export function spokenDistance(m) {
+  const plural = (n, one, few, many) => {
+    const n10 = n % 10;
+    const n100 = n % 100;
+    if (n100 >= 11 && n100 <= 14) return many;
+    if (n10 === 1) return one;
+    if (n10 >= 2 && n10 <= 4) return few;
+    return many;
+  };
+  if (m >= 1000) {
+    const km = m / 1000;
+    if (Number.isInteger(km)) return km + ' ' + plural(km, 'километр', 'километра', 'километров');
+    return km.toFixed(1).replace('.', ',') + ' километра';
+  }
+  return Math.round(m) + ' ' + plural(Math.round(m), 'метр', 'метра', 'метров');
 }
 
 export { haversine };

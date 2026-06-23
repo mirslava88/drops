@@ -76,18 +76,28 @@ function nearestOnSegment(p, a, b) {
 // Привязка позиции p к маршруту coords (cum — его накопленные длины).
 // Возвращает: dist — отклонение от маршрута (м), seg — индекс сегмента,
 // along — пройденное расстояние вдоль маршрута до точки привязки (м).
-export function snapToRoute(coords, cum, p) {
+// prevAlong — прогресс на прошлом фиксе: при заданном значении предпочитаем
+// привязку в окне [prevAlong-back, prevAlong+fwd], чтобы на самопересекающихся
+// маршрутах не «перепрыгнуть» на другой проход. Глобальный минимум берём как
+// запасной вариант, только если он заметно ближе (реальный сход с маршрута).
+export function snapToRoute(coords, cum, p, prevAlong = null, back = 100, fwd = 1500) {
   let best = { dist: Infinity, seg: 0, t: 0, along: 0 };
+  let win = { dist: Infinity, seg: 0, t: 0, along: 0 };
+  const lo = prevAlong == null ? -Infinity : prevAlong - back;
+  const hi = prevAlong == null ? Infinity : prevAlong + fwd;
   for (let i = 0; i < coords.length - 1; i++) {
     // Проецируем относительно самой p, поэтому p == начало координат [0,0].
     const a = project(coords[i], p);
     const b = project(coords[i + 1], p);
     const ns = nearestOnSegment([0, 0], a, b);
     const d = Math.hypot(ns.point[0], ns.point[1]);
-    if (d < best.dist) {
-      const segLen = cum[i + 1] - cum[i];
-      best = { dist: d, seg: i, t: ns.t, along: cum[i] + segLen * ns.t };
+    const segLen = cum[i + 1] - cum[i];
+    const along = cum[i] + segLen * ns.t;
+    if (d < best.dist) best = { dist: d, seg: i, t: ns.t, along };
+    if (along >= lo && along <= hi && d < win.dist) {
+      win = { dist: d, seg: i, t: ns.t, along };
     }
   }
+  if (prevAlong != null && win.dist < Infinity && win.dist <= best.dist + 25) return win;
   return best;
 }

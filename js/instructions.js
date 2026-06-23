@@ -35,27 +35,36 @@ export function instructionText(step) {
     case 'turn':
       if (mod === 'uturn') return 'Развернитесь';
       if (mod === 'straight') return `Продолжайте движение прямо${byStreet(name)}`;
-      return `Поверните ${DIR[mod] || ''}`.trim() + onStreet(name);
+      // Без известного направления не командуем «поверните» вслепую.
+      return DIR[mod]
+        ? `Поверните ${DIR[mod]}` + onStreet(name)
+        : `Продолжайте движение${byStreet(name)}`;
 
     case 'new name':
     case 'continue':
       if (mod === 'uturn') return 'Развернитесь';
       return `Продолжайте движение${byStreet(name)}`;
 
-    case 'merge':
-      return `Перестройтесь${mod ? ' ' + (DIR[mod] || '') : ''}`.trim() + onStreet(name);
+    case 'merge': {
+      // Для перестроения осмысленны только лево/право; «прямо»/«разворот» — нет.
+      const side = mod && mod !== 'straight' && mod !== 'uturn' ? DIR[mod] || '' : '';
+      return ('Перестройтесь' + (side ? ' ' + side : '')).trim() + onStreet(name);
+    }
 
     case 'on ramp':
-      return `Съезд на дорогу${onStreet(name)}`;
+      // Въезд на дорогу: используем направление съезда, если оно есть.
+      return `Выезжайте${mod && DIR[mod] ? ' ' + DIR[mod] : ''}`.trim() + onStreet(name);
 
     case 'off ramp':
-      return `Съезжайте ${DIR[mod] || ''}`.trim() + onStreet(name);
+      return `Съезжайте${mod && DIR[mod] ? ' ' + DIR[mod] : ''}`.trim() + onStreet(name);
 
     case 'fork':
       return `На развилке держитесь ${DIR[mod] || 'прямо'}`;
 
     case 'end of road':
-      return `В конце дороги поверните ${DIR[mod] || ''}`.trim() + onStreet(name);
+      return DIR[mod]
+        ? `В конце дороги поверните ${DIR[mod]}` + onStreet(name)
+        : `Продолжайте движение${byStreet(name)}`;
 
     case 'roundabout':
     case 'rotary':

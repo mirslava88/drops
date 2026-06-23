@@ -203,7 +203,14 @@ function stop(announce = true) {
 // ---------- не давать экрану гаснуть ----------
 async function keepAwake() {
   try {
-    if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      // Браузер сам снимает блокировку, когда экран гаснет/вкладка скрыта;
+      // обнуляем ссылку, чтобы visibilitychange смог запросить её заново.
+      wakeLock.addEventListener('release', () => {
+        wakeLock = null;
+      });
+    }
   } catch {
     /* не критично */
   }
